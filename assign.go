@@ -41,22 +41,91 @@ func stringInSlice(a string, list []string) bool {
 
 func performSort(filename string) {
 	rawCSVdata := readCSVFile(filename)
+	k := 0
 	for i := range rawCSVdata {
+		k = i
+		if len(rawCSVdata[i]) == 0 || len(rawCSVdata[i][0]) == 0 {
+			break
+		}
+	}
+
+	allTeams := rawCSVdata[:k]
+	allProjects := rawCSVdata[k+1:]
+
+	fmt.Printf("Total Teams: %d\n", len(allTeams))
+	fmt.Printf("Total Projects: %d\n", len(allProjects))
+
+	for i := range allTeams {
 		j := rand.Intn(i + 1)
-		rawCSVdata[i], rawCSVdata[j] = rawCSVdata[j], rawCSVdata[i]
+		allTeams[i], allTeams[j] = allTeams[j], allTeams[i]
 	}
 
 	selections := map[string]bool{}
+	teams := map[string]string{}
+	pickPositions := map[int]int{}
+	randomPicks := 0
+	noPicks := 0
 
-	for _, row := range rawCSVdata {
+	totalPicks := (len(allTeams[0]) - 1) / 2
+
+	for _, row := range allTeams {
 		for j, val := range row {
-			if j > 0 && (!selections[val]) {
+			if j > 0 && j <= totalPicks && (!selections[val]) {
+				pickPositions[j] = pickPositions[j] + 1
 				selections[val] = true
-				fmt.Printf("%s,%s\n", row[0], val)
+				teams[row[0]] = val
+				fmt.Printf("%s,%s,Pick #%d\n", row[0], val, j)
 				break
 			}
 		}
 	}
+
+	fmt.Print("\n")
+
+	for _, row := range allTeams {
+		_, exists := teams[row[0]]
+
+		if !exists {
+			for _, projects := range allProjects {
+				project := projects[0]
+				_, taken := selections[project]
+				if taken {
+					continue
+				}
+
+				for _, sel := range row {
+					if project == sel {
+						continue
+					}
+				}
+
+				fmt.Printf("%s,%s,Random Pick\n", row[0], project)
+				randomPicks += 1
+				selections[project] = true
+				teams[row[0]] = project
+				break
+			}
+		}
+	}
+
+	fmt.Print("\n")
+
+	for _, row := range allTeams {
+		_, exists := teams[row[0]]
+
+		if !exists {
+			fmt.Printf("%s,None\n", row[0])
+			noPicks += 1
+		}
+	}
+
+	fmt.Print("\n")
+
+	for k, v := range pickPositions {
+		fmt.Printf("Pick #%d: %d\n", k, v)
+	}
+	fmt.Printf("Random Picks: %d\n", randomPicks)
+	fmt.Printf("Unable to Pick: %d\n", noPicks)
 }
 
 func usage() {
@@ -74,7 +143,7 @@ func main() {
 		fmt.Println("Input file is missing")
 		os.Exit(1)
 	}
-	fmt.Printf("opening %s\n", args[0])
+	fmt.Printf("opening %s\n\n", args[0])
 
 	performSort(args[0])
 }

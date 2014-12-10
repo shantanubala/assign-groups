@@ -107,6 +107,7 @@ func performSort(filename string) {
 
 				for _, sel := range row {
 					if project == sel {
+						break
 						continue
 					}
 				}

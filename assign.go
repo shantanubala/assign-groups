@@ -94,6 +94,11 @@ func performSort(filename string) {
 
 	fmt.Print("\n")
 
+	for p := range allProjects {
+		k := rand.Intn(p + 1)
+		allProjects[p], allProjects[k] = allProjects[k], allProjects[p]
+	}
+
 	for _, row := range allTeams {
 		_, exists := teams[row[0]]
 

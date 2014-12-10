@@ -105,11 +105,17 @@ func performSort(filename string) {
 					continue
 				}
 
+				selectProj := true
+
 				for _, sel := range row {
 					if project == sel {
+						selectProj = false
 						break
-						continue
 					}
+				}
+
+				if !selectProj {
+					continue
 				}
 
 				fmt.Printf("%s,%s,Random Pick\n", row[0], project)

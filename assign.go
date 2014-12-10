@@ -40,6 +40,15 @@ func stringInSlice(a string, list []string) bool {
 }
 
 func performSort(filename string) {
+	csvOut, err := os.Create("output.csv")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	defer csvOut.Close()
+	writer := csv.NewWriter(csvOut)
+
 	rawCSVdata := readCSVFile(filename)
 	k := 0
 	for i := range rawCSVdata {
@@ -54,6 +63,8 @@ func performSort(filename string) {
 
 	fmt.Printf("Total Teams: %d\n", len(allTeams))
 	fmt.Printf("Total Projects: %d\n", len(allProjects))
+	writer.Write([]string{"Total Projects", fmt.Sprintf("%d", len(allTeams))})
+	writer.Write([]string{"Total Teams", fmt.Sprintf("%d", len(allProjects))})
 
 	for i := range allTeams {
 		j := rand.Intn(i + 1)
@@ -75,6 +86,7 @@ func performSort(filename string) {
 				selections[val] = true
 				teams[row[0]] = val
 				fmt.Printf("%s,%s,Pick #%d\n", row[0], val, j)
+				writer.Write([]string{row[0], val, fmt.Sprintf("Pick #%d", j)})
 				break
 			}
 		}
@@ -100,6 +112,7 @@ func performSort(filename string) {
 				}
 
 				fmt.Printf("%s,%s,Random Pick\n", row[0], project)
+				writer.Write([]string{row[0], project, "Random Pick"})
 				randomPicks += 1
 				selections[project] = true
 				teams[row[0]] = project
@@ -115,6 +128,7 @@ func performSort(filename string) {
 
 		if !exists {
 			fmt.Printf("%s,None\n", row[0])
+			writer.Write([]string{row[0], "None", "None"})
 			noPicks += 1
 		}
 	}
@@ -123,9 +137,14 @@ func performSort(filename string) {
 
 	for k, v := range pickPositions {
 		fmt.Printf("Pick #%d: %d\n", k, v)
+		writer.Write([]string{fmt.Sprintf("Pick #%d", k), fmt.Sprintf("%d", v)})
 	}
 	fmt.Printf("Random Picks: %d\n", randomPicks)
+	writer.Write([]string{"Random Picks", fmt.Sprintf("%d", randomPicks)})
 	fmt.Printf("Unable to Pick: %d\n", noPicks)
+	writer.Write([]string{"Unable to Pick", fmt.Sprintf("%d", noPicks)})
+
+	writer.Flush()
 }
 
 func usage() {

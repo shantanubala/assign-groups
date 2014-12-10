@@ -21,6 +21,27 @@ The program executes the following procedure:
 5. Output a CSV file with team assignments (with overall statistics)
 
 
+CSV Data Formatting
+===================
+
+The structure of the input data is most easily understood by opening the sample `groups.csv` file. In it, you will find a list of teams. The first three columns following the team name are the "top 3 picks" in order, and the last three columns are the "bottom 3 picks" in order.
+
+After a single blank space, a full list of projects is also included in the first column after the teams.
+
+The total number of teams and projects is flexible -- any number can be used. For within-team assignment, the input data is also flexible. You can include only the "top 2" and "bottom 2" picks -- the program will simply split the selections by half of the total number. For example:
+
+lambda	p1	p4	p5	p6	p0	p2
+
+This indicates that p1, p4, and p5 are the top 3 picks for team lambda, and p6, p0, and p2 are the bottom three picks.
+
+If only two selections are made, the row will look like:
+
+lambda	p1	p4	p5	p6
+
+In this case, p1 and p4 are interpreted as the top 2 picks, and p5 and p6 are the bottom 2 picks for team lambda.
+
+This allows for complete flexibility over the number of teams, the number of selections per team, and the total number of projects.
+
 Compiling the Source
 =====================
 
